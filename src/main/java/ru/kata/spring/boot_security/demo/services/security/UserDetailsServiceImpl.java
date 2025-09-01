@@ -27,7 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public AccountDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         List<User> user = userDao.findByUsername(username);
         if (user.size() != 1) {
-            throw new UsernameNotFoundException("User ot found");
+            throw new UsernameNotFoundException("User not found");
         }
         return new AccountDetails(user.get(0));
     }

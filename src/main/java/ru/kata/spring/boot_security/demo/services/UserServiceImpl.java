@@ -39,7 +39,9 @@ public class UserServiceImpl implements UserService {
     public void update(int id, User updatedUser) {
         User userToBeUpdated = show(id);
         userToBeUpdated.setUsername(updatedUser.getUsername());
-
+        userToBeUpdated.setPassword(updatedUser.getPassword());
+        userToBeUpdated.setRoles(updatedUser.getRoles());
+        userDao.update(id, userToBeUpdated);
     }
 
     @Transactional

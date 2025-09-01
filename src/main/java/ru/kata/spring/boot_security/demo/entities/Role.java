@@ -56,7 +56,10 @@ public class Role {
 
     @Override
     public String toString() {
-        return this.name.split("_")[1];
+        if (name != null && name.contains("_")) {
+            return this.name.split("_")[1];
+        }
+        return this.name;
     }
 }
 

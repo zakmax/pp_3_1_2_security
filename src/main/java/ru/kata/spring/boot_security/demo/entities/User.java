@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class User {
     private String password;
 
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -41,7 +41,7 @@ public class User {
 
     }
 
-    public User(int id, String name) {
+    public User(int id, String name, String password) {
         this.id = id;
         this.username = name;
         this.password = password;
