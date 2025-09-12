@@ -3,26 +3,30 @@ package ru.kata.spring.boot_security.demo.entities;
 
 
 
+import org.springframework.security.core.GrantedAuthority;
+
 import javax.persistence.*;
-import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "roles")
-public class Role {
+public class Role implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id")
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    private String nameRole;
+
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
+    private Set<User> users;
 
     public Role() {
     }
 
-    public Role(String name) {
-        this.name = name;
+    public Role(Long id, String nameRole) {
+        this.id = id;
+        this.nameRole = nameRole;
     }
 
     public Long getId() {
@@ -33,33 +37,35 @@ public class Role {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getNameRole() {
+        return nameRole;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNameRole(String nameRole) {
+        this.nameRole = nameRole;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Role role = (Role) o;
-        return name.equals(role.name);
+    public Set<User> getUsers() {
+        return users;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
     @Override
     public String toString() {
-        if (name != null && name.contains("_")) {
-            return this.name.split("_")[1];
-        }
-        return this.name;
+        return "Role{" +
+                "id=" + id +
+                ", nameRole='" + nameRole + '\'' +
+//                ", users=" + users +
+                '}';
+    }
+
+    @Override
+    public String getAuthority() {
+        return nameRole;
     }
 }
+
 

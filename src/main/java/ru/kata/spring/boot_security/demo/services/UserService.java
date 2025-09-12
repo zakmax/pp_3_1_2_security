@@ -1,33 +1,28 @@
 package ru.kata.spring.boot_security.demo.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-import ru.kata.spring.boot_security.demo.entities.Role;
+import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.entities.User;
 
 
-import javax.transaction.Transactional;
-import java.beans.Transient;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
+public interface UserService extends UserDetailsService {
 
-public interface UserService {
+    List<User> allUsers();
 
-    List<User> index();
+    boolean addUser(UserDao userDto);
 
-    User show(int id);
+    boolean updateUser(UserDao userDao);
 
-    void save(User user);
+    void deleteUser(Long id);
 
-    void update(int id, User updatedUser);
+    User getUserById(Long id);
 
-    void delete(int id);
+    User getUserByName(String name);
+
+    @Override
+    UserDetails loadUserByUsername(String s) throws UsernameNotFoundException;
 }

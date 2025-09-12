@@ -1,72 +1,82 @@
 package ru.kata.spring.boot_security.demo.entities;
 
 
-
-
-
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import ru.kata.spring.boot_security.demo.dao.UserDao;
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
-    @Column(name = "username")
-    private String username;
-    @Column(name = "password")
+    private Long id;
+
+    private String name;
+
+    private Integer age;
+
     private String password;
 
-
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(
+                    name = "user_id",
+                    referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "role_id",
+                    referencedColumnName = "id")
     )
-
     private Set<Role> roles;
 
-
     public User() {
-
     }
 
-    public User(int id, String name, String password) {
-        this.id = id;
-        this.username = name;
+    public User(UserDao userDto) {
+        if (userDto.getId() != null) {
+            this.id = userDto.getId();
+        } else {
+            this.id = null;
+        }
+        this.name = userDto.getName();
+        this.password = userDto.getPassword();
+        this.age = userDto.getAge();
+        this.roles = new HashSet<>();
+    }
+
+    public User(String name, Integer age, String password) {
+        this.name = name;
+        this.age = age;
         this.password = password;
     }
 
-    public User(String name, String password, Collection<String> roles) {
-        this.username = name;
-        this.password = password;
-        this.roles = roles.stream().map(Role::new).collect(Collectors.toSet());
-    }
-
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 
     public String getPassword() {
@@ -81,27 +91,52 @@ public class User {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
-    public List<SimpleGrantedAuthority> getAuthorities() {
-
-        return roles.stream().map(p -> new SimpleGrantedAuthority(p.getName())).collect(Collectors.toList());
+    public void setRoles(Set<Role> role) {
+        this.roles = role;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return id == user.id && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(roles, user.roles);
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id, username, password, roles);
+    public String getUsername() {
+        return name;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", password='" + password + '\'' +
+//                ", role=" + roles +
+                '}';
     }
 }
+
 
 
 
