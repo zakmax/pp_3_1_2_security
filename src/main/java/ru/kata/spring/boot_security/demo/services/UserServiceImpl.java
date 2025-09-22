@@ -9,15 +9,13 @@ import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.entities.User;
 import ru.kata.spring.boot_security.demo.repository.UserRepo;
 
-
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Transactional
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final UserRepo userRepo;
 
@@ -31,7 +29,7 @@ public class UserServiceImpl implements UserService{
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List <User> allUsers() {
+    public List<User> allUsers() {
         return userRepo.findAll();
     }
 
@@ -66,7 +64,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User getUserByName(String name) throws IllegalStateException{
+    public User getUserByName(String name) throws IllegalStateException {
         return userRepo.findByName(name).orElseThrow(() -> new IllegalStateException("User not find by name"));
     }
 
