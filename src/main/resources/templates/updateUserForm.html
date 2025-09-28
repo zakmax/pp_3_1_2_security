@@ -17,34 +17,60 @@
     tr:nth-child(even) {
         background-color: #f2f2f2;
     }
+
+    .password-hint {
+        font-size: 12px;
+        color: #666;
+        font-style: italic;
+    }
 </style>
 <table>
     <tr>
-        <th> User id</th>
-        <th> User name</th>
-        <th> User password</th>
-        <th> User age</th>
-        <th> User role</th>
-        <th> Action</th>
+        <th>User id</th>
+        <th>User name</th>
+        <th>User password</th>
+        <th>User age</th>
+        <th>User role</th>
+        <th>Action</th>
     </tr>
-    <tr>
     <tr>
         <form action="/admin/editUser" method="post">
-            <td th:text="${user.getId()}"> id</td>
+            <td th:text="${user.getId()}">id</td>
             <td><input name="name" th:value="${user.name}"> name</td>
-            <td><input name="password" th:value="${user.password}"> password</td>
+            <td>
+                <input type="password"
+                       name="password"
+                       placeholder="Оставьте пустым, чтобы не менять пароль"
+                       style="width: 200px;">
+                <div class="password-hint">Оставьте пустым, чтобы сохранить текущий пароль</div>
+            </td>
             <td><input name="age" th:value="${user.age}" type="number"> age</td>
             <td style="text-align: center">
-                <input type="checkbox" name="roles" value="admin">admin<Br>
-                <input type="checkbox" checked="true" name="roles" value="user">user<Br>
+                <!-- Динамически отображаем текущие роли пользователя -->
+                <input type="checkbox"
+                       name="roles"
+                       value="admin"
+                       th:checked="${#strings.contains(user.getStringRole(), 'admin')}">admin<br>
+                <input type="checkbox"
+                       name="roles"
+                       value="user"
+                       th:checked="${#strings.contains(user.getStringRole(), 'user')}">user<br>
             </td>
             <td>
-                <button name="id" th:value="${user.id}" type="submit">Edit</button>
+                <!-- Скрытое поле для ID -->
+                <input type="hidden" name="id" th:value="${user.id}">
+                <button type="submit">Save Changes</button>
+            </td>
         </form>
-        </td>
     </tr>
 </table>
-<form action="/logout" method="GET">
+
+<!-- Кнопка возврата -->
+<form action="/admin" method="GET" style="margin-top: 20px;">
+    <input type="submit" value="Back to Admin Panel">
+</form>
+
+<form action="/logout" method="GET" style="margin-top: 10px;">
     <input type="submit" value="Log out">
 </form>
 </body>

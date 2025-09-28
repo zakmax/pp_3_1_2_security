@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.services;
 
+import org.hibernate.Hibernate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,6 +10,7 @@ import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.entities.User;
 import ru.kata.spring.boot_security.demo.repository.UserRepo;
 
+import javax.swing.event.HyperlinkEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +40,7 @@ public class UserServiceImpl implements UserService {
         if (!isNameUnique(userDao)) {
             return false;
         }
-        User user = fromForm(userDao);
+        User user = updateUserFromForm(userDao);
         userRepo.save(user);
         return true;
     }
@@ -46,12 +48,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean updateUser(UserDao userDao) {
         if (getUserById(userDao.getId()).getName().equals(userDao.getName()) || isNameUnique(userDao)) {
-            User user = fromForm(userDao);
+            User user = updateUserFromForm(userDao);
             userRepo.save(user);
             return true;
         }
         return false;
     }
+
+    private  User updateUserFromForm (UserDao userDao) {
+        User existingUser = getUserById(userDao.getId());
+
+        existingUser.setName(userDao.getName());
+        existingUser.setAge(userDao.getAge());
+
+        setRoles(existingUser, userDao);
+
+        if (userDao.getPassword() != null && !userDao.getPassword().trim().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(userDao.getPassword()));
+        }
+        return existingUser;
+    }
+
 
     @Override
     public void deleteUser(Long id) {
@@ -63,14 +80,17 @@ public class UserServiceImpl implements UserService {
         return userRepo.findById(id);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public User getUserByName(String name) throws IllegalStateException {
         return userRepo.findByName(name).orElseThrow(() -> new IllegalStateException("User not find by name"));
     }
-
+    @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return getUserByName(s);
+       User user = getUserByName(s);
+        Hibernate.initialize(user.getRoles());
+        return user;
     }
 
     private void setRoles(User user, UserDao userDao) {
@@ -83,10 +103,5 @@ public class UserServiceImpl implements UserService {
         return !userRepo.findByName(userDao.getName()).isPresent();
     }
 
-    private User fromForm(UserDao userDao) {
-        User user = new User(userDao);
-        setRoles(user, userDao);
-        user.setPassword(passwordEncoder.encode(userDao.getPassword()));
-        return user;
-    }
+
 }

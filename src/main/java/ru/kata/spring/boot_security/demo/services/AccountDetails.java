@@ -1,4 +1,4 @@
-package ru.kata.spring.boot_security.demo.services.security;
+package ru.kata.spring.boot_security.demo.services;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
