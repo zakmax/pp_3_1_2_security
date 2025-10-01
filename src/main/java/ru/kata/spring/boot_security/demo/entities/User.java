@@ -38,15 +38,15 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(UserDao userDto) {
-        if (userDto.getId() != null) {
-            this.id = userDto.getId();
+    public User(UserDao userDao) {
+        if (userDao.getId() != null) {
+            this.id = userDao.getId();
         } else {
             this.id = null;
         }
-        this.name = userDto.getName();
-        this.password = userDto.getPassword();
-        this.age = userDto.getAge();
+        this.name = userDao.getName();
+        this.password = userDao.getPassword();
+        this.age = userDao.getAge();
         this.roles = new HashSet<>();
     }
 

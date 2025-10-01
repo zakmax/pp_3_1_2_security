@@ -23,17 +23,17 @@ public class AdminController {
 
     @GetMapping
     public String getAllUsers(Model model) {
-        List<UserDao> userDtoList = new ArrayList<>();
+        List<UserDao> userDaoList = new ArrayList<>();
         for (User user : userService.allUsers()) {
-            userDtoList.add(new UserDao(user));
+            userDaoList.add(new UserDao(user));
         }
-        model.addAttribute("userList", userDtoList);
+        model.addAttribute("userList", userDaoList);
         return "table";
     }
 
     @PostMapping("/userAdd")
-    public String addUser(UserDao userDto) {
-        if (userService.addUser(userDto)) {
+    public String addUser(UserDao userDao) {
+        if (userService.addUser(userDao)) {
             return "redirect:/admin";
         } else {
             return "wrongName";
